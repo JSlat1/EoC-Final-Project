@@ -8,78 +8,71 @@
       <h4 style="padding-top: 0.25em;"><i>By Jack Slattery</i></h4>
     </div>
     <div id="cesiumContainer"></div>
-      <script>
+      <script type="text/javascript" language="javascript">
 
-      Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwMGZkMzlkYy0xNDdkLTQ5MTEtYjY2OS1jN2JjNzllNmZlMzgiLCJpZCI6ODc1MDMsImlhdCI6MTY0ODU3NjczMX0.1JhoIllSRmkhIjzTipN2UYWWSvTOC6eRx2T0sMzE3b0';
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwMGZkMzlkYy0xNDdkLTQ5MTEtYjY2OS1jN2JjNzllNmZlMzgiLCJpZCI6ODc1MDMsImlhdCI6MTY0ODU3NjczMX0.1JhoIllSRmkhIjzTipN2UYWWSvTOC6eRx2T0sMzE3b0';
 
-      // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
-      const viewer = new Cesium.Viewer('cesiumContainer', {
-        shouldAnimate: true
-      });
-      viewer.scene.globe.enableLighting = true;
+        // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
+        const viewer = new Cesium.Viewer('cesiumContainer', {
+          shouldAnimate: true
+        });
+        viewer.scene.globe.enableLighting = true;
 
-      var updateView = "{{updateViewer}}"
+        var updateView = "{{updateViewer}}"
 
-      function updateCesiumView() {
-        // Update the Cesium Viewer
-        if (updateView == "True") {
-          viewer.dataSources.removeAll();
-          czmlJson = JSON.parse('{{shownCzml | tojson}}');
-          viewer.dataSources.add(
-            Cesium.CzmlDataSource.load(czmlJson)
-          );
+        function updateCesiumView() {
+          // Update the Cesium Viewer
+          if (updateView == "True") {
+            viewer.dataSources.removeAll();
+            czmlJson = JSON.parse('{{shownCzml | tojson}}');
+            viewer.dataSources.add(
+              Cesium.CzmlDataSource.load(czmlJson)
+            );
+          }
+          return true;
         }
-        return true;
-      }
 
-      if (updateView == "True") {
-        updateCesiumView()
-      }
+        if (updateView == "True") {
+          updateCesiumView()
+        }
 
       </script>
     </div>
     <center>
-      <form>
-        <div class="form-group" style="padding-top: 1em;">
-          <div style="height:5em; width:70em; justify-content:center;">
-            <button type='submit' class="btn btn-primary btn-lg btn-block" style="background-color:slateGray; border: 1px solid dimGray;">Submit</button>
+      
+      <div style="padding:1em 1em 3em 3em; height:40em; width:70em;">
+        <center>
+          <div style="padding: 1em 1em 1em 1em;">
+            <button id="submitButton" style="background-color:ghostWhite" onclick='sendData()'>Plot Selected</button>
           </div>
-          <div style="overflow-y:scroll; height:40em; width:70em;">
-            <div class="table-responsive">
-              <table class="table table-striped table-md">
-                <thead>
-                  <tr>
-                    <th>Include?</th>
-                    <th>Name</th>
-                    <th>Satcat Code</th>
-                    <th>Owner</th>
-                    <th>State</th>
-                    <th>Launch Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for key,value in df_final.iterrows() %}
-                    <tr>
-                      <td>
-                        <div class="form-check">
-                          <input type="checkbox" class="form-check-input" id="sat-{{value['Satcat']}}" name="sat-{{value['Satcat']}}" value="on">
-                        </div>
-                      </td>
-                      <td>{{value['Name']}}</td>
-                      <td>{{value['Satcat']}}</td>
-                      <td>{{value['Owner']}}</td>
-                      <td>{{value['State']}}</td>
-                      <td>{{value['LDate']}}</td>
-                      <td>{{value['ExpandedStatus']}}</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </form>
+          <h6>ex. Search SPXS for SpaceX Satellites</h6>
+          <table id="example" class="display" style="width:100%">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Satcat Code</th>
+                <th>Owner</th>
+                <th>State</th>
+                <th>Launch Date</th>
+                <th>Status</th>
+              </tr>
+            <tbody>
+              {% for key,value in df_final.iterrows() %}
+                <tr>
+                  <td></td>
+                  <td>{{value['Name']}}</td>
+                  <td>{{value['Satcat']}}</td>
+                  <td>{{value['Owner']}}</td>
+                  <td>{{value['State']}}</td>
+                  <td>{{value['LDate']}}</td>
+                  <td>{{value['ExpandedStatus']}}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </center>
+      </div>
     </center>
   </center>
 {% endblock %}
