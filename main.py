@@ -14,16 +14,16 @@ Original file is located at
 
 """**Clone Github Repository**"""
 
-!git clone https://github.com/JSlat1/EoC-Final-Project.git
+#!git clone https://github.com/JSlat1/EoC-Final-Project.git
 
 """**Install packages using pip**"""
 
-!pip install satellite_czml
-!pip install czml
-!pip install flask
-!pip install flask-ngrok
-!pip install pyngrok
-!pip install pandas
+#!pip install satellite_czml
+#!pip install czml
+#!pip install flask
+#!pip install flask-ngrok
+#!pip install pyngrok
+#!pip install pandas
 
 """**Import packages and set some useful variables**"""
 
@@ -31,7 +31,7 @@ from flask import Flask
 from flask import request, escape, render_template, redirect, url_for
 from flask_ngrok import run_with_ngrok
 
-from google.colab import drive
+#from google.colab import drive
 
 import urllib.request
 import os
@@ -50,10 +50,18 @@ import functools
 path = os.getcwd()
 
 # Set Ngrok Auth Token
-!ngrok authtoken 27fCzpu6NSjcaY2wZe1l2PJafn9_2z5cjwKkyNFsFksKPn5NJ
+#!ngrok authtoken 27fCzpu6NSjcaY2wZe1l2PJafn9_2z5cjwKkyNFsFksKPn5NJ
 
 # Set Cesium API Key
 cesiumApiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwMGZkMzlkYy0xNDdkLTQ5MTEtYjY2OS1jN2JjNzllNmZlMzgiLCJpZCI6ODc1MDMsImlhdCI6MTY0ODU3NjczMX0.1JhoIllSRmkhIjzTipN2UYWWSvTOC6eRx2T0sMzE3b0'
+
+def start_ngrok():
+  from pyngrok import ngrok
+
+  ngrok.set_auth_token("27fCzpu6NSjcaY2wZe1l2PJafn9_2z5cjwKkyNFsFksKPn5NJ")
+  url = ngrok.connect(5000).public_url
+  print(' * Tunnel URL:', url)
+
 
 """**Function to retrieve TLE data**"""
 
@@ -212,7 +220,7 @@ global auxcatFrame
 
 fileIndex = 0
 for fileName in fileNameList:
-  with open(path + "/EoC-Final-Project/CSVs/" + fileName + '.csv', 'r') as csvFile:
+  with open(path + "/CSVs/" + fileName + '.csv', 'r') as csvFile:
     if (fileName == 'currentcat'):
       currentFrame = pd.read_csv(csvFile, dtype=str)
     if (fileName == 'satcat'):
@@ -231,15 +239,15 @@ del deepcatFrame['Unnamed: 0']
 del deepIndexFrame['Unnamed: 0']
 del auxcatFrame['Unnamed: 0']
 
-display(satcatFrame)
-display(auxcatFrame)
+#display(satcatFrame)
+#display(auxcatFrame)
 
 """**Check active flag to get only active payloads**"""
 
 # find active objects
 activeMask = currentFrame['Active'].str.find('A') != -1
 activeFrame = currentFrame.loc[activeMask, :]
-display(activeFrame)
+#display(activeFrame)
 
 # create list of columns in active frame
 activeFrameColumns = list(activeFrame.columns)
@@ -251,7 +259,7 @@ for satIndex in activeFrame.loc[fixMask, ['Satcat']].index:
   activeFrame.loc[satIndex, 'Satcat'] = np.nan
 
 # show fixed dataframe
-display(activeFrame)
+#display(activeFrame)
 
 """**Get Deepcat Objects** (no active deepcat objects exist)"""
 
@@ -259,7 +267,7 @@ deepMask = activeFrame['DeepCat'].notna()
 currentDeepDf = activeFrame.loc[deepMask, :]
 
 # Show df
-display(currentDeepDf)
+#display(currentDeepDf)
 
 """**Merge Satcat and Auxcat for Active Objects**"""
 
@@ -293,12 +301,12 @@ print(dif_col_list)
 dif_col_list.append('JCAT')
 
 satAuxFrame = pd.concat([auxcatFrame, satcatFrame], axis=0)
-display(satAuxFrame)
+#display(satAuxFrame)
 
 # merge activeFrame with satcatFrame
 global df_final
 df_final = pd.merge(activeFrame, satAuxFrame[dif_col_list], how='left', on='JCAT', suffixes=["", "_duplicate"])
-display(df_final)
+#display(df_final)
 
 """**Create Function to Cross-reference Dataframe from Given TLE**"""
 
@@ -335,14 +343,14 @@ createTleList()
 combineWithTLEs(tleDataList)
 
 # show final dataframe
-display(df_final)
+#display(df_final)
 print(df_final.columns)
 
 """**Flask App**"""
 
 app = Flask(__name__, 
-            template_folder=path + '/EoC-Final-Project/templates',
-            static_folder=path + '/EoC-Final-Project/static')
+            template_folder=path + '/templates',
+            static_folder=path + '/static')
 
 run_with_ngrok(app)
 
@@ -379,3 +387,4 @@ def index(selectionInfo):
 
 if __name__ == "__main__":
   app.run()
+  start_ngrok()
