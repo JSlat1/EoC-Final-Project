@@ -94,7 +94,7 @@
           let selectOutput = table.rows('.selected').indexes();
           let data = table.rows(selectOutput).data();
           let satList = []
-          for (let i=0; i<=data.length; i++){
+          for (let i=0; i<=data.length-1; i++){
             console.log("Selected: " + data[i][2]);
             satList.push(data[i][2]);
           }
